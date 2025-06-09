@@ -135,11 +135,17 @@ const verifyToken = async (req, res, next) => {
 // Middleware
 console.log('🔧 Setting up middleware...');
 try {
+  // FIXED CORS CONFIGURATION
   app.use(cors({
-    origin: process.env.NODE_ENV === 'production' 
-      ? process.env.FRONTEND_URL 
-      : ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:3000'],
-    credentials: true
+    origin: [
+      'https://memory-vasa-7a9sodu99-i-vasa-me.vercel.app',
+      'http://localhost:5173', 
+      'http://localhost:5174', 
+      'http://localhost:3000'
+    ],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
   }));
   console.log('✅ CORS middleware configured');
 
