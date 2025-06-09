@@ -135,14 +135,29 @@ const verifyToken = async (req, res, next) => {
 // Middleware
 console.log('🔧 Setting up middleware...');
 try {
-  // FIXED CORS CONFIGURATION
+  // FIXED CORS CONFIGURATION - Works with all Vercel deployments
   app.use(cors({
-    origin: [
-      'https://memory-vasa-7a9sodu99-i-vasa-me.vercel.app',
-      'http://localhost:5173', 
-      'http://localhost:5174', 
-      'http://localhost:3000'
-    ],
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      
+      // Allow all localhost origins for development
+      if (origin.includes('localhost')) return callback(null, true);
+      
+      // Allow all Vercel deployments for your app
+      if (origin.includes('i-vasa-me.vercel.app')) return callback(null, true);
+      
+      // Allow specific production domains if needed
+      const allowedOrigins = [
+        'https://memory-vasa-7a9sodu99-i-vasa-me.vercel.app',
+        'https://memory-vasa-1pqcyhxej-i-vasa-me.vercel.app'
+      ];
+      
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      
+      // Reject all other origins
+      callback(new Error('Not allowed by CORS'));
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
